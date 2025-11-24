@@ -13,10 +13,10 @@ def send_to_telegram(message, image_url=None):
     """Envía un mensaje a Telegram con logs"""
     try:
         if image_url:
-            url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendPhoto"
+            url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
             r = requests.post(url, data={"chat_id": CHAT_ID, "photo": image_url, "caption": message, "parse_mode": "Markdown"})
         else:
-            url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+            url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
             r = requests.post(url, data={"chat_id": CHAT_ID, "text": message, "parse_mode": "Markdown"})
         r.raise_for_status()
         print(f"[OK] Mensaje enviado: {message[:50]}...")
@@ -83,5 +83,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
