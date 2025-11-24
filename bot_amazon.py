@@ -1,6 +1,6 @@
 import requests
 import os
-import re
+import time
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
@@ -12,21 +12,18 @@ def leer_productos(filename="amazon.txt"):
     with open(filename, "r", encoding="utf-8") as f:
         contenido = f.read()
 
-    # Separar los productos por una línea en blanco
     bloques = [b.strip() for b in contenido.split("\n\n") if b.strip()]
-
     productos = []
 
     for bloque in bloques:
         producto = {}
-
-        # Buscar claves tipo KEY = "valor"
         lineas = bloque.split("\n")
+
         for linea in lineas:
             if "=" in linea:
                 key, valor = linea.split("=", 1)
                 key = key.strip()
-                valor = valor.strip().strip('"')  # quitar comillas iniciales/finales
+                valor = valor.strip().strip('"')
                 producto[key] = valor
 
         productos.append(producto)
@@ -46,29 +43,25 @@ def send_product_to_telegram(p):
     url = p["URL_AFI"]
 
     headers = {"User-Agent": "Mozilla/5.0"}
-
-    # Descargar imagen
     img_response = requests.get(image_url, headers=headers)
+
     if img_response.status_code != 200:
         print("❌ Error descargando imagen:", image_url)
         return
 
     telegram_url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
 
-    # Formato del mensaje
     message = f"""
 <b>{title}</b>
 
-💰 <b>{price}</b>
+💲 <b>{price}</b>
 ❌ <b>{old_price}</b>
 🔥 <b>{discount}</b>
 
 🔗 {url}
 """
 
-    files = {
-        "photo": ("producto.jpg", img_response.content)
-    }
+    files = {"photo": ("producto.jpg", img_response.content)}
 
     data = {
         "chat_id": CHAT_ID,
@@ -90,6 +83,10 @@ def send_product_to_telegram(p):
 if __name__ == "__main__":
     productos = leer_productos("amazon.txt")
 
-    for producto in productos:
+    for idx, producto in enumerate(productos):
         send_product_to_telegram(producto)
 
+        # Pausa entre envíos (excepto después del último)
+        if idx < len(productos) - 1:
+            print("⏳ Esperando 3 minutos antes del siguiente producto...")
+            time.sleep(180)  # 180 segundos = 3 minutos
