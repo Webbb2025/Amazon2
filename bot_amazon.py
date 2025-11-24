@@ -1,6 +1,7 @@
 import requests
 import os
 import time
+import sys
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
@@ -54,7 +55,7 @@ def send_product_to_telegram(p):
     message = f"""
 <b>{title}</b>
 
-💰  <b>{price}</b>
+💲 <b>{price}</b>
 ❌ <b>{old_price}</b>
 🔥 <b>{discount}</b>
 
@@ -83,11 +84,16 @@ def send_product_to_telegram(p):
 if __name__ == "__main__":
     productos = leer_productos("amazon.txt")
 
+    if not productos:
+        print("⚠ No hay productos en el archivo amazon.txt")
+        sys.exit(0)
+
     for idx, producto in enumerate(productos):
         send_product_to_telegram(producto)
 
-        # Pausa entre envíos (excepto después del último)
         if idx < len(productos) - 1:
             print("⏳ Esperando 3 minutos antes del siguiente producto...")
-            time.sleep(180)  # 180 segundos = 3 minutos
+            time.sleep(180)
 
+    print("✅ Todos los productos han sido enviados. Finalizando proceso.")
+    sys.exit(0)
