@@ -45,9 +45,10 @@ def send_product_to_telegram(title: str, price: str, url: str, image_url: str):
 
 if __name__ == "__main__":
     send_product_to_telegram(
-        title="Zapatillas Nike Running",
-        price="$89.99",
-        url="https://www.amazon.com/dp/B0C1234567",
+        title="Sony Alpha 7 III cámara mirrorless (full-frame) con objetivo 28-70mm, 24.2MP, 10 fps, estabilización de 5 ejes y enfoque automático preciso, ideal para fotografía versátil y vídeo en 4K, Negro",
+        price="1.399,00",
+        url="https://www.amazon.es/dp/B07B4R8QGM?tag=crt06f-21&linkCode=ogi&th=1&psc=1",
         image_url="https://m.media-amazon.com/images/I/71vJxAMM1NL._AC_SX679_.jpg"
     )
+
 
