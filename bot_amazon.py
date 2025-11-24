@@ -1,32 +1,74 @@
 import requests
 import os
+import re
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
-def send_product_to_telegram(title: str, price: str, url: str, image_url: str):
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0 Safari/537.36"
-    }
+# -------------------------------------------
+# PARSEAR ARCHIVO amazon.txt
+# -------------------------------------------
+def leer_productos(filename="amazon.txt"):
+    with open(filename, "r", encoding="utf-8") as f:
+        contenido = f.read()
 
+    # Separar los productos por una línea en blanco
+    bloques = [b.strip() for b in contenido.split("\n\n") if b.strip()]
+
+    productos = []
+
+    for bloque in bloques:
+        producto = {}
+
+        # Buscar claves tipo KEY = "valor"
+        lineas = bloque.split("\n")
+        for linea in lineas:
+            if "=" in linea:
+                key, valor = linea.split("=", 1)
+                key = key.strip()
+                valor = valor.strip().strip('"')  # quitar comillas iniciales/finales
+                producto[key] = valor
+
+        productos.append(producto)
+
+    return productos
+
+
+# -------------------------------------------
+# ENVIAR PRODUCTO A TELEGRAM
+# -------------------------------------------
+def send_product_to_telegram(p):
+    title = p["TITULO"]
+    image_url = p["URL_IMG"]
+    price = p["PRECIO"]
+    old_price = p["PRECIO_ANT"]
+    discount = p["DESCUENTO"]
+    url = p["URL_AFI"]
+
+    headers = {"User-Agent": "Mozilla/5.0"}
+
+    # Descargar imagen
     img_response = requests.get(image_url, headers=headers)
-
     if img_response.status_code != 200:
-        print("❌ No se pudo descargar la imagen")
-        print("Status:", img_response.status_code)
+        print("❌ Error descargando imagen:", image_url)
         return
 
     telegram_url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
 
+    # Formato del mensaje
     message = f"""
 <b>{title}</b>
 
- <b>Precio:</b> {price} €
+💲 <b>{price}</b>
+❌ <b>{old_price}</b>
+🔥 <b>{discount}</b>
 
-🔗  {url}
+🔗 {url}
 """
 
-    files = {"photo": ("product.jpg", img_response.content)}
+    files = {
+        "photo": ("producto.jpg", img_response.content)
+    }
 
     data = {
         "chat_id": CHAT_ID,
@@ -37,19 +79,16 @@ def send_product_to_telegram(title: str, price: str, url: str, image_url: str):
     response = requests.post(telegram_url, data=data, files=files)
 
     if response.status_code == 200:
-        print("✅ Producto enviado correctamente")
+        print("✅ Enviado:", title[:40])
     else:
-        print(f"❌ Error al enviar: {response.status_code}")
-        print(response.text)
+        print("❌ Error:", response.status_code, response.text)
 
 
+# -------------------------------------------
+# MAIN
+# -------------------------------------------
 if __name__ == "__main__":
-    send_product_to_telegram(
-        title="Sony Alpha 7 III cámara mirrorless (full-frame) con objetivo 28-70mm, 24.2MP, 10 fps, estabilización de 5 ejes y enfoque automático preciso, ideal para fotografía versátil y vídeo en 4K, Negro",
-        price="1.399,00",
-        url="https://www.amazon.es/dp/B07B4R8QGM?tag=crt06f-21&linkCode=ogi&th=1&psc=1",
-        image_url="https://m.media-amazon.com/images/I/71vJxAMM1NL._AC_SX679_.jpg"
-    )
+    productos = leer_productos("amazon.txt")
 
-
-
+    for producto in productos:
+        send_product_to_telegram(producto)
