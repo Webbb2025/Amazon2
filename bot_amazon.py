@@ -59,7 +59,7 @@ def send_product_to_telegram(p):
     message = f"""
 <b>{title}</b>
 
-💲 <b>{price}</b>
+💰 <b>{price}</b>
 ❌ <b>{old_price}</b>
 🔥 <b>{discount}</b>
 
@@ -92,3 +92,4 @@ if __name__ == "__main__":
 
     for producto in productos:
         send_product_to_telegram(producto)
+
