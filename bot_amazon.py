@@ -55,7 +55,7 @@ def send_product_to_telegram(p):
     message = f"""
 <b>{title}</b>
 
-💲 <b>{price}</b>
+💰 <b>{price}</b>
 ❌ <b>{old_price}</b>
 🔥 <b>{discount}</b>
 
@@ -97,3 +97,4 @@ if __name__ == "__main__":
 
     print("✅ Todos los productos han sido enviados. Finalizando proceso.")
     sys.exit(0)
+
