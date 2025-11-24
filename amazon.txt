@@ -1,24 +1,3 @@
-TITULO = "Netatmo Termostato Inteligente y Conectado de Ahorro de energía, WiFi, controla la calefacción de Forma remota Mediante la aplicación|Compatible con Calderas Individuales, NTH01-AMZ"
-URL_IMG = "https://m.media-amazon.com/images/I/71Jbu2Znh7L._AC_SX569_.jpg"
-PRECIO = "Precio: 89,99 €"
-PRECIO_ANT = "Precio anterior: 399,99 €"
-DESCUENTO = "Descuento: -78%"
-URL_AFI  = "https://www.amazon.es/dp/B0CC67PYHY?tag=crt06f-21&linkCode=ogi&th=1&psc=1"
-
-TITULO = "STANLEY Caja de Herramientas Rodante Esencial, Taller Móvil 3 en 1 con Unidades Apilables, Solución Portátil para Herramientas, STST1-80151."
-URL_IMG = "https://m.media-amazon.com/images/I/61JV15ghF5L._AC_SX569_.jpg"
-PRECIO = "Precio: 25,99 €"
-PRECIO_ANT = "Precio anterior: 139,00 €"
-DESCUENTO = "Descuento: -81%"
-URL_AFI  = "https://www.amazon.es/dp/B06XCBPFRN?tag=crt06f-21&linkCode=ogi&th=1&psc=1"
-
-TITULO = "Ring Intercom Audio | Haz que tu interfono sea más inteligente | Transmisión de audio, llaves virtuales y acceso a distancia | Instalación por cuenta propia"
-URL_IMG = "https://m.media-amazon.com/images/I/717BMM-pfLL._SY606_.jpg"
-PRECIO = "Precio: 34,99 €"
-PRECIO_ANT = "Precio anterior: 149,98 €"
-DESCUENTO = "Descuento: -77%"
-URL_AFI  = "https://www.amazon.es/dp/B0CKGQ5913?tag=crt06f-21&linkCode=ogi&th=1&psc=1"
-
 TITULO = "EZVIZ Mirilla Digital de Puerta con Pantalla Táctil a Color de 4.3'' Cámara Video Timbre Inalámbrico Monitor con Batería Recargable 4600mAh,PIR Detección de Movimiento,Audio Bidireccional,Modelo CP4"
 URL_IMG = "https://m.media-amazon.com/images/I/51UqkRKPakL._AC_SX679_.jpg"
 PRECIO = "Precio: 119,99 €"
@@ -872,4 +851,5 @@ PRECIO = "Precio: 14,99 €"
 PRECIO_ANT = "Precio anterior: 25,99 €"
 DESCUENTO = "Descuento: -42%"
 URL_AFI  = "https://www.amazon.es/dp/B07NS14648?tag=crt06f-21&linkCode=ogi&th=1&psc=1"
+
 
