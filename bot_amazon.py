@@ -23,7 +23,7 @@ def send_product_to_telegram(title: str, price: str, url: str, image_url: str):
 
 💲 <b>Precio:</b> {price}
 
-🔗 <a href="{url}">Ver en Amazon</a>
+🔗  {url}
 """
 
     files = {"photo": ("product.jpg", img_response.content)}
@@ -50,3 +50,4 @@ if __name__ == "__main__":
         url="https://www.amazon.com/dp/B0C1234567",
         image_url="https://m.media-amazon.com/images/I/71vJxAMM1NL._AC_SX679_.jpg"
     )
+
