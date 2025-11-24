@@ -87,7 +87,8 @@ if __name__ == "__main__":
         # Solo esperar si NO es el último producto
         if idx < len(productos) - 1:
             print("⏳ Esperando 6 minutos antes del siguiente producto...")
-            time.sleep(360)
+            time.sleep(600)
 
     print("✅ Todos los productos han sido enviados. Finalizando proceso.")
     sys.exit(0)
+
