@@ -92,9 +92,10 @@ if __name__ == "__main__":
         send_product_to_telegram(producto)
 
         if idx < len(productos) - 1:
-            print("⏳ Esperando 3 minutos antes del siguiente producto...")
-            time.sleep(180)
+            print("⏳ Esperando 6 minutos antes del siguiente producto...")
+            time.sleep(360)
 
     print("✅ Todos los productos han sido enviados. Finalizando proceso.")
     sys.exit(0)
+
 
