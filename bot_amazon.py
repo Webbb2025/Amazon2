@@ -1,61 +1,53 @@
-import os
 import requests
+import os
 
-# =========================
-# Configuración desde entorno
-# =========================
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
-# Verificar que estén definidas
-if not BOT_TOKEN or not CHAT_ID:
-    raise ValueError("Debes definir BOT_TOKEN y CHAT_ID en las variables de entorno")
-
-# =========================
-# Función para enviar foto
-# =========================
-def send_to_telegram(message: str, image_url: str = None):
+def send_product_to_telegram(title: str, price: str, url: str, image_url: str):
     """
-    Envía un mensaje y opcionalmente una foto a Telegram.
+    Envía un producto de Amazon a Telegram con formato elegante.
     """
-    if image_url:
-        # Descargar imagen en binario
-        img_response = requests.get(image_url)
 
-        if img_response.status_code != 200:
-            print("❌ No se pudo descargar la imagen")
-            return
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0 Safari/537.36"
+    }
 
-        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
+    # 1. Descargar imagen
+    img_response = requests.get(image_url, headers=headers)
 
-        files = {
-            "photo": ("image.jpg", img_response.content)
-        }
+    if img_response.status_code != 200:
+        print("❌ No se pudo descargar la imagen")
+        print("Status:", img_response.status_code)
+        return
 
-        data = {
-            "chat_id": CHAT_ID,
-            "caption": message
-        }
+    # 2. URL Telegram
+    telegram_url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
 
-        response = requests.post(url, data=data, files=files)
+    # 3. Construir mensaje HTML
+    message = f"""
+<b>{title}</b>
 
-    else:
-        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-        data = {"chat_id": CHAT_ID, "text": message}
-        response = requests.post(url, data=data)
+💲 <b>Precio:</b> {price}
+
+🔗 <a href="{url}">Ver en Amazon</a>
+"""
+
+    # 4. Mandar mensaje con imagen
+    files = {
+        "photo": ("product.jpg", img_response.content)
+    }
+
+    data = {
+        "chat_id": CHAT_ID,
+        "caption": message,
+        "parse_mode": "HTML"
+    }
+
+    response = requests.post(telegram_url, data=data, files=files)
 
     if response.status_code == 200:
-        print("✅ Mensaje enviado correctamente")
+        print("✅ Producto enviado correctamente")
     else:
-        print(f"❌ Error al enviar mensaje: {response.status_code}")
+        print(f"❌ Error al enviar: {response.status_code}")
         print(response.text)
-
-
-# =========================
-# Ejemplo de uso
-# =========================
-if __name__ == "__main__":
-    mensaje = "¡Hola! Este es un mensaje de prueba desde mi bot."
-    imagen = "https://example.com/imagen.jpg"  # Reemplaza con la URL de tu imagen
-    send_to_telegram(mensaje, imagen)
-
