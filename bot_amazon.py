@@ -54,7 +54,7 @@ def send_product_to_telegram(p):
     message = f"""
 <b>{title}</b>
 
-💲 <b>{price}</b>
+💰  <b>{price}</b>
 ❌ <b>{old_price}</b>
 🔥 <b>{discount}</b>
 
@@ -90,3 +90,4 @@ if __name__ == "__main__":
         if idx < len(productos) - 1:
             print("⏳ Esperando 3 minutos antes del siguiente producto...")
             time.sleep(180)  # 180 segundos = 3 minutos
+
