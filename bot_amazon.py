@@ -3,7 +3,7 @@ import json
 import requests
 
 # Configura secretos de Telegram desde GitHub Actions
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
+TELEGRAM_TOKEN = os.environ.get("BOT_TOKEN")
 CHAT_ID = os.environ.get("CHAT_ID")
 
 def send_to_telegram(message, image_url=None):
@@ -80,3 +80,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
