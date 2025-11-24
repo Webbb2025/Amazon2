@@ -21,7 +21,7 @@ def send_product_to_telegram(title: str, price: str, url: str, image_url: str):
     message = f"""
 <b>{title}</b>
 
-💲 <b>Precio:</b> {price}
+ <b>Precio:</b> {price} €
 
 🔗  {url}
 """
@@ -50,5 +50,6 @@ if __name__ == "__main__":
         url="https://www.amazon.es/dp/B07B4R8QGM?tag=crt06f-21&linkCode=ogi&th=1&psc=1",
         image_url="https://m.media-amazon.com/images/I/71vJxAMM1NL._AC_SX679_.jpg"
     )
+
 
 
