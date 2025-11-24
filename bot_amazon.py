@@ -19,18 +19,13 @@ def leer_productos(filename="amazon.txt"):
     for bloque in bloques:
         producto = {}
         lineas = bloque.split("\n")
-
         for linea in lineas:
             if "=" in linea:
                 key, valor = linea.split("=", 1)
-                key = key.strip()
-                valor = valor.strip().strip('"')
-                producto[key] = valor
-
+                producto[key.strip()] = valor.strip().strip('"')
         productos.append(producto)
 
     return productos
-
 
 # -------------------------------------------
 # ENVIAR PRODUCTO A TELEGRAM
@@ -48,7 +43,7 @@ def send_product_to_telegram(p):
 
     if img_response.status_code != 200:
         print("❌ Error descargando imagen:", image_url)
-        return
+        return False
 
     telegram_url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
 
@@ -63,20 +58,16 @@ def send_product_to_telegram(p):
 """
 
     files = {"photo": ("producto.jpg", img_response.content)}
-
-    data = {
-        "chat_id": CHAT_ID,
-        "caption": message,
-        "parse_mode": "HTML"
-    }
+    data = {"chat_id": CHAT_ID, "caption": message, "parse_mode": "HTML"}
 
     response = requests.post(telegram_url, data=data, files=files)
 
     if response.status_code == 200:
         print("✅ Enviado:", title[:40])
+        return True
     else:
         print("❌ Error:", response.status_code, response.text)
-
+        return False
 
 # -------------------------------------------
 # MAIN
@@ -89,13 +80,14 @@ if __name__ == "__main__":
         sys.exit(0)
 
     for idx, producto in enumerate(productos):
-        send_product_to_telegram(producto)
+        enviado = send_product_to_telegram(producto)
+        if not enviado:
+            print("⚠ Falló el envío, se continuará con el siguiente producto.")
 
+        # Solo esperar si NO es el último producto
         if idx < len(productos) - 1:
             print("⏳ Esperando 6 minutos antes del siguiente producto...")
             time.sleep(360)
 
     print("✅ Todos los productos han sido enviados. Finalizando proceso.")
     sys.exit(0)
-
-
