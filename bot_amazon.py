@@ -18,30 +18,38 @@ def send_to_telegram(message: str, image_url: str = None):
     """
     Envía un mensaje y opcionalmente una foto a Telegram.
     """
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
-    
-    data = {
-        "chat_id": CHAT_ID,
-        "caption": message
-    }
-    
     if image_url:
-        data["photo"] = image_url
-    else:
-        # Si no hay imagen, enviamos solo texto
-        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+        # Descargar imagen en binario
+        img_response = requests.get(image_url)
+
+        if img_response.status_code != 200:
+            print("❌ No se pudo descargar la imagen")
+            return
+
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
+
+        files = {
+            "photo": ("image.jpg", img_response.content)
+        }
+
         data = {
             "chat_id": CHAT_ID,
-            "text": message
+            "caption": message
         }
-    
-    response = requests.post(url, data=data)
-    
+
+        response = requests.post(url, data=data, files=files)
+
+    else:
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+        data = {"chat_id": CHAT_ID, "text": message}
+        response = requests.post(url, data=data)
+
     if response.status_code == 200:
         print("✅ Mensaje enviado correctamente")
     else:
         print(f"❌ Error al enviar mensaje: {response.status_code}")
         print(response.text)
+
 
 # =========================
 # Ejemplo de uso
@@ -50,3 +58,4 @@ if __name__ == "__main__":
     mensaje = "¡Hola! Este es un mensaje de prueba desde mi bot."
     imagen = "https://example.com/imagen.jpg"  # Reemplaza con la URL de tu imagen
     send_to_telegram(mensaje, imagen)
+
