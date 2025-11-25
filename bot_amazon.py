@@ -2,9 +2,57 @@ import requests
 import os
 import time
 import sys
+from datetime import datetime, timedelta
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
+
+LOG_FILE = "enviados.log"
+TIMESTAMP_FILE = "log_timestamp.txt"
+
+# -------------------------------------------
+# CONTROL DEL RESETEO AUTOMÁTICO DEL LOG
+# -------------------------------------------
+def resetear_log_si_corresponde():
+    """Reinicia el log si han pasado 14 días."""
+    if not os.path.exists(TIMESTAMP_FILE):  
+        # Primera ejecución → crear timestamp
+        with open(TIMESTAMP_FILE, "w") as f:
+            f.write(datetime.now().isoformat())
+        return
+
+    try:
+        with open(TIMESTAMP_FILE, "r") as f:
+            fecha_str = f.read().strip()
+            ultima_fecha = datetime.fromisoformat(fecha_str)
+    except:
+        # Si hay un error, reiniciar timestamp
+        ultima_fecha = datetime.now()
+        with open(TIMESTAMP_FILE, "w") as f:
+            f.write(ultima_fecha.isoformat())
+
+    # Si pasaron 14 días → resetear
+    if datetime.now() - ultima_fecha >= timedelta(days=14):
+        print("🗑 Reseteando enviados.log (han pasado 14 días)")
+        if os.path.exists(LOG_FILE):
+            os.remove(LOG_FILE)
+
+        # Actualizar fecha del timestamp
+        with open(TIMESTAMP_FILE, "w") as f:
+            f.write(datetime.now().isoformat())
+
+# -------------------------------------------
+# LEER LOG DE PRODUCTOS YA ENVIADOS
+# -------------------------------------------
+def cargar_enviados():
+    if not os.path.exists(LOG_FILE):
+        return set()
+    with open(LOG_FILE, "r", encoding="utf-8") as f:
+        return set(line.strip() for line in f.readlines())
+
+def guardar_enviado(asin):
+    with open(LOG_FILE, "a", encoding="utf-8") as f:
+        f.write(asin + "\n")
 
 # -------------------------------------------
 # PARSEAR ARCHIVO amazon.txt
@@ -32,6 +80,7 @@ def leer_productos(filename="amazon.txt"):
 # -------------------------------------------
 def send_product_to_telegram(p):
     title = p["TITULO"]
+    asin = p["ASIN"]
     image_url = p["URL_IMG"]
     price = p["PRECIO"]
     old_price = p["PRECIO_ANT"]
@@ -64,6 +113,7 @@ def send_product_to_telegram(p):
 
     if response.status_code == 200:
         print("✅ Enviado:", title[:40])
+        guardar_enviado(asin)
         return True
     else:
         print("❌ Error:", response.status_code, response.text)
@@ -73,6 +123,14 @@ def send_product_to_telegram(p):
 # MAIN
 # -------------------------------------------
 if __name__ == "__main__":
+
+    # 1️⃣ Resetear log si tocaba
+    resetear_log_si_corresponde()
+
+    # 2️⃣ Cargar log existente
+    enviados = cargar_enviados()
+
+    # 3️⃣ Leer productos
     productos = leer_productos("amazon.txt")
 
     if not productos:
@@ -80,15 +138,21 @@ if __name__ == "__main__":
         sys.exit(0)
 
     for idx, producto in enumerate(productos):
-        enviado = send_product_to_telegram(producto)
-        if not enviado:
-            print("⚠ Falló el envío, se continuará con el siguiente producto.")
 
-        # Solo esperar si NO es el último producto
+        asin = producto.get("ASIN")
+
+        if asin in enviados:
+            print(f"⏭ Saltando (ya enviado): {asin}")
+            continue
+
+        enviado = send_product_to_telegram(producto)
+
+        if not enviado:
+            print("⚠ Falló el envío, continuando con el siguiente.")
+        
         if idx < len(productos) - 1:
             print("⏳ Esperando 6 minutos antes del siguiente producto...")
             time.sleep(600)
 
-    print("✅ Todos los productos han sido enviados. Finalizando proceso.")
+    print("✅ Todos los productos procesados.")
     sys.exit(0)
-
